@@ -10,16 +10,16 @@
     <body>
    <main>
     <div>
-
+        <p>Quantity</p>
         <button onclick="console.log('quantity:',quantity)">
         Show cart
         </button>
 
-        <button onclick=" quantity=quantity+1; console.log('quantity:',quantity)" >
+        <button onclick=" quantity++; console.log('quantity:',quantity)" >
        Add cart
         </button>
               
-        <button  onclick=" quantity=quantity+2; console.log('quantity:', quantity)">
+        <button  onclick=" quantity+=2; console.log('quantity:', quantity)">
          +2 
         </button>
 
@@ -27,7 +27,9 @@
          +3
         </button>
     
-        <button onclick=" quantity=0; console.log('quantity:', quantity)">
+        <button onclick=" quantity=0; 
+        console.log('quantity:');
+        console.log('quantity:', quantity)">
          reset cart
         </button>
     </div>
