@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prince — Dev Roadmap Tracker</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d0d0f;
+  --bg2:#131316;
+  --bg3:#1a1a1f;
+  --bg4:#222228;
+  --border:#2a2a32;
+  --border2:#38383f;
+  --text:#e8e6f0;
+  --text2:#9b98a8;
+  --text3:#5a5868;
+  --green:#00e5a0;
+  --green-dim:#00a870;
+  --green-glow:rgba(0,229,160,0.12);
+  --purple:#a78bfa;
+  --purple-dim:#7c5fe0;
+  --blue:#38bdf8;
+  --coral:#f87171;
+  --amber:#fbbf24;
+  --pink:#f472b6;
+  --font:'SF Mono',ui-monospace,'Cascadia Code','Fira Code',monospace;
+  --sans:system-ui,-apple-system,'Segoe UI',sans-serif;
+  --radius:8px;
+  --radius-lg:12px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;display:flex;overflow-x:hidden;overflow-y:auto}
+
+/* SIDEBAR */
+.sidebar{width:240px;height:100vh;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;transition:transform .3s;overflow:hidden}
+.sidebar-logo{padding:20px 20px 16px;border-bottom:1px solid var(--border)}
+.logo-tag{font-family:var(--font);font-size:11px;color:var(--green);letter-spacing:.15em;text-transform:uppercase}
+.logo-name{font-size:17px;font-weight:600;color:var(--text);margin-top:3px}
+.logo-sub{font-size:11px;color:var(--text3);margin-top:2px;font-family:var(--font)}
+.sidebar-nav{flex:1;overflow-y:auto;overflow-x:hidden;padding:10px 0;min-height:0}
+.nav-section-label{font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;padding:14px 20px 6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 20px;cursor:pointer;border-left:2px solid transparent;transition:all .15s;font-size:13px;color:var(--text2)}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:var(--green-glow);border-left-color:var(--green);color:var(--green)}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--border2);flex-shrink:0;transition:background .15s}
+.nav-item.active .nav-dot{background:var(--green)}
+.nav-item.done .nav-dot{background:var(--green-dim)}
+.nav-progress{font-family:var(--font);font-size:10px;color:var(--text3);margin-left:auto;white-space:nowrap}
+.sidebar-footer{padding:16px 20px;border-top:1px solid var(--border)}
+.overall-label{font-size:11px;color:var(--text3);margin-bottom:6px}
+.overall-bar-bg{height:4px;background:var(--bg4);border-radius:2px;overflow:hidden}
+.overall-bar-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--purple));border-radius:2px;transition:width .4s ease}
+.overall-pct{font-family:var(--font);font-size:13px;color:var(--green);margin-top:5px}
+
+/* MAIN */
+.main{margin-left:240px;flex:1;min-height:100vh;padding:0;overflow-y:auto}
+.section-page{display:none;padding:32px 36px;max-width:860px}
+.section-page.active{display:block}
+
+/* PAGE HEADER */
+.page-header{margin-bottom:28px}
+.page-eyebrow{font-family:var(--font);font-size:11px;color:var(--green);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}
+.page-title{font-size:26px;font-weight:600;color:var(--text);line-height:1.2}
+.page-sub{font-size:14px;color:var(--text2);margin-top:6px;line-height:1.6}
+
+/* STAT CARDS */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:28px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px}
+.stat-val{font-family:var(--font);font-size:22px;font-weight:500;color:var(--text)}
+.stat-lbl{font-size:12px;color:var(--text3);margin-top:3px}
+.stat-card.accent{border-color:var(--green);background:var(--green-glow)}
+.stat-card.accent .stat-val{color:var(--green)}
+
+/* PHASE BLOCKS */
+.phase-block{margin-bottom:24px}
+.phase-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.phase-badge{font-family:var(--font);font-size:10px;font-weight:500;padding:3px 10px;border-radius:20px;letter-spacing:.06em}
+.phase-title{font-size:15px;font-weight:500;color:var(--text)}
+.phase-bar-bg{flex:1;height:3px;background:var(--bg4);border-radius:2px;overflow:hidden}
+.phase-bar-fill{height:100%;border-radius:2px;transition:width .3s}
+.phase-pct{font-family:var(--font);font-size:11px;color:var(--text3);min-width:32px;text-align:right}
+
+/* CHECKLIST */
+.checklist-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:10px}
+.checklist-header{display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;transition:background .15s}
+.checklist-header:hover{background:var(--bg3)}
+.ch-check{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.ch-check.done{background:var(--green);border-color:var(--green)}
+.ch-check svg{display:none}
+.ch-check.done svg{display:block}
+.ch-accent{width:3px;align-self:stretch;margin:-13px 0;flex-shrink:0;border-radius:0}
+.ch-info{flex:1}
+.ch-title{font-size:14px;font-weight:500;color:var(--text)}
+.ch-sub{font-size:12px;color:var(--text2);margin-top:2px}
+.ch-count{font-family:var(--font);font-size:11px;color:var(--text3);white-space:nowrap}
+.ch-chevron{color:var(--text3);transition:transform .2s;flex-shrink:0}
+.ch-chevron.open{transform:rotate(180deg)}
+.checklist-body{display:none;padding:4px 16px 14px 52px}
+.checklist-body.open{display:block}
+.task-item{display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:1px solid var(--border)}
+.task-item:last-child{border-bottom:none}
+.task-cb{margin-top:2px;width:14px;height:14px;accent-color:var(--green);flex-shrink:0;cursor:pointer}
+.task-lbl{font-size:13px;color:var(--text2);line-height:1.55;cursor:pointer}
+.task-lbl.done{text-decoration:line-through;color:var(--text3)}
+
+/* SPECIAL: weekly grid */
+.week-grid{display:grid;grid-template-columns:repeat(13,1fr);gap:4px;margin-bottom:8px}
+.week-cell{aspect-ratio:1;border-radius:3px;background:var(--bg4);border:1px solid var(--border);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--text3);font-family:var(--font)}
+.week-cell:hover{border-color:var(--green)}
+.week-cell.done{background:var(--green);border-color:var(--green)}
+.week-cell.done-half{background:var(--green-dim);border-color:var(--green-dim)}
+.week-label{font-size:11px;color:var(--text3);margin-bottom:10px;font-family:var(--font)}
+
+/* SPECIAL: habit tracker */
+.habit-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.habit-row:last-child{border-bottom:none}
+.habit-name{font-size:13px;color:var(--text2);width:180px;flex-shrink:0}
+.habit-days{display:flex;gap:5px}
+.habit-day{width:28px;height:28px;border-radius:5px;background:var(--bg4);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text3);cursor:pointer;font-family:var(--font);transition:all .15s}
+.habit-day:hover{border-color:var(--green)}
+.habit-day.done{background:var(--green);border-color:var(--green);color:var(--bg)}
+
+/* SPECIAL: job tracker table */
+.job-table{width:100%;border-collapse:collapse;font-size:13px}
+.job-table th{text-align:left;padding:10px 12px;font-size:11px;color:var(--text3);font-family:var(--font);text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid var(--border);font-weight:500}
+.job-table td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:middle}
+.job-table tr:last-child td{border-bottom:none}
+.job-table tr:hover td{background:var(--bg3)}
+.status-badge{font-size:11px;padding:3px 10px;border-radius:20px;font-family:var(--font)}
+.s-applied{background:rgba(56,189,248,.12);color:var(--blue)}
+.s-interview{background:rgba(167,139,250,.12);color:var(--purple)}
+.s-offer{background:rgba(0,229,160,.12);color:var(--green)}
+.s-rejected{background:rgba(248,113,113,.12);color:var(--coral)}
+.s-pending{background:rgba(90,88,104,.15);color:var(--text3)}
+.add-row-btn{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text3);background:none;border:1px dashed var(--border2);border-radius:var(--radius);padding:9px 14px;cursor:pointer;width:100%;margin-top:10px;font-family:var(--sans);transition:all .15s}
+.add-row-btn:hover{border-color:var(--green);color:var(--green)}
+
+/* SPECIAL: scorecard */
+.score-item{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--border)}
+.score-item:last-child{border-bottom:none}
+.score-check{width:22px;height:22px;border-radius:6px;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:all .15s}
+.score-check.done{background:var(--green);border-color:var(--green)}
+.score-check svg{display:none}
+.score-check.done svg{display:block}
+.score-info{flex:1}
+.score-title{font-size:14px;font-weight:500;color:var(--text)}
+.score-desc{font-size:12px;color:var(--text3);margin-top:2px}
+.score-weight{font-family:var(--font);font-size:11px;color:var(--text3);white-space:nowrap}
+
+/* DASHBOARD */
+.dash-phase-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)}
+.dash-phase-row:last-child{border-bottom:none}
+.dash-phase-name{font-size:13px;color:var(--text2);width:220px;flex-shrink:0}
+.dash-phase-bar-bg{flex:1;height:5px;background:var(--bg4);border-radius:3px;overflow:hidden}
+.dash-phase-bar-fill{height:100%;border-radius:3px;transition:width .4s}
+.dash-phase-pct{font-family:var(--font);font-size:12px;color:var(--text3);min-width:38px;text-align:right}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--bg3);border:1px solid var(--green);color:var(--green);font-family:var(--font);font-size:12px;padding:9px 16px;border-radius:var(--radius);opacity:0;transition:opacity .2s;pointer-events:none;z-index:999}
+.toast.show{opacity:1}
+
+/* MOBILE TOGGLE */
+.menu-toggle{display:none;position:fixed;top:14px;left:14px;z-index:200;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:8px 10px;cursor:pointer;color:var(--text)}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .section-page{padding:20px 18px}
+  .menu-toggle{display:flex}
+  .week-grid{grid-template-columns:repeat(7,1fr)}
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--text3)}
+</style>
+</head>
+<body>
+
+<button class="menu-toggle" id="menu-toggle">
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+</button>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-tag">// ARK Systems</div>
+    <div class="logo-name">Prince</div>
+    <div class="logo-sub">dev_roadmap_tracker.exe</div>
+  </div>
+  <nav class="sidebar-nav" id="sidebar-nav"></nav>
+  <div class="sidebar-footer">
+    <div class="overall-label">Overall progress</div>
+    <div class="overall-bar-bg"><div class="overall-bar-fill" id="overall-bar" style="width:0%"></div></div>
+    <div class="overall-pct" id="overall-pct">0%</div>
+  </div>
+</aside>
+
+<main class="main" id="main-content"></main>
+<div class="toast" id="toast">// progress saved</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+const STORAGE_KEY = 'ark_roadmap_v1';
+function loadState(){try{const r=localStorage.getItem(STORAGE_KEY);return r?JSON.parse(r):{checks:{},weeks:{},habits:{},jobs:[]}}catch(e){return{checks:{},weeks:{},habits:{},jobs:[]}}}
+function saveState(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));showToast()}catch(e){}}
+let state = loadState();
+if(!state.checks)state.checks={};
+if(!state.weeks)state.weeks={};
+if(!state.habits)state.habits={};
+if(!state.jobs)state.jobs=[];
+
+let toastTimer;
+function showToast(){const t=document.getElementById('toast');t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),1600)}
+
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const PHASES = [
+  {id:'p1',label:'Phase 1',title:'Build Strong Foundations',months:'Month 1–2',color:'#00e5a0',
+   sections:[
+    {id:'js',title:'JavaScript Fundamentals',sub:'Core language mastery',color:'#00e5a0',
+     groups:[
+      {title:'Core Concepts to Learn',items:['Variables & Data Types','Arrays & Objects','Functions & Arrow Functions','Loops (for, while, forEach)','Classes & Modules','Async/Await & Promises']},
+      {title:'Mini Projects to Build',items:['Calculator app','To-do List app','Student Grade Calculator','Expense Tracker']},
+      {title:'Resources',items:['Work through JavaScript.info','MDN JavaScript Guide','Push all projects to GitHub']}
+     ]},
+    {id:'git',title:'Git & GitHub',sub:'Version control from day one',color:'#00e5a0',
+     groups:[
+      {title:'Commands to Master',items:['git init, git add, git commit','git push & git pull','Branching & merging','Pull requests & code review','Resolving merge conflicts']},
+      {title:'Goal',items:['Every project must be pushed to GitHub','Employers check GitHub before interviews','Write proper README for each repo']}
+     ]},
+    {id:'sql',title:'SQL & PostgreSQL',sub:'Database foundations',color:'#00e5a0',
+     groups:[
+      {title:'SQL Concepts to Learn',items:['CREATE TABLE, INSERT, UPDATE, DELETE','JOINs (INNER, LEFT, RIGHT)','GROUP BY & aggregate functions','Indexes & query optimisation','Transactions & rollbacks','Normalisation (1NF, 2NF, 3NF)']},
+      {title:'Practice Project',items:['Design DB: Students, Teachers, Subjects, Grades','Write at least 30 SQL queries','Test queries in DBeaver or psql']}
+     ]}
+   ]},
+  {id:'p2',label:'Phase 2',title:'Frontend Development',months:'Month 3–4',color:'#a78bfa',
+   sections:[
+    {id:'html',title:'HTML & CSS',sub:'Layouts, responsiveness & design',color:'#a78bfa',
+     groups:[
+      {title:'CSS to Master',items:['Flexbox layouts','CSS Grid','Responsive design & media queries','Forms & input styling','Tables & navigation bars']},
+      {title:'Project: School Website',items:['Home page','About page','Admissions page','Contact page','Deploy on Netlify or GitHub Pages']}
+     ]},
+    {id:'react',title:'React',sub:'Modern frontend framework',color:'#a78bfa',
+     groups:[
+      {title:'React Concepts',items:['Components & Props','State (useState)','Hooks: useEffect, useContext','Forms & controlled inputs','React Router (routing)','API calls with fetch/Axios']},
+      {title:'Project: Student Dashboard',items:['Login page (mock auth)','Profile page','Grades page','Notifications page','Use mock data — no backend yet']}
+     ]}
+   ]},
+  {id:'p3',label:'Phase 3',title:'Backend Development',months:'Month 5–6',color:'#38bdf8',
+   sections:[
+    {id:'spring',title:'Java + Spring Boot',sub:'REST APIs & backend architecture',color:'#38bdf8',
+     groups:[
+      {title:'Spring Boot to Learn',items:['Core Spring & project setup','Controllers, Services, Repositories','Dependency Injection','Building REST APIs','API testing with Postman']},
+      {title:'Build APIs for',items:['Students CRUD API','Teachers CRUD API','Subjects CRUD API','Grades CRUD API']}
+     ]},
+    {id:'jpa',title:'Spring Data JPA',sub:'Database integration with Java',color:'#38bdf8',
+     groups:[
+      {title:'JPA Concepts',items:['Entities & annotations','One-to-One relationships','One-to-Many relationships','Many-to-Many relationships','CRUD operations with repositories']}
+     ]},
+    {id:'auth',title:'Authentication & Security',sub:'JWT, roles & access control',color:'#38bdf8',
+     groups:[
+      {title:'Auth to Implement',items:['JWT token generation & validation','Login & registration endpoints','Role-Based Access Control (RBAC)','Student role permissions','Teacher role permissions','Administrator role permissions']},
+      {title:'Project: School Results API',items:['Login endpoint','View grades (student)','Upload grades (teacher)','Manage students (admin)']}
+     ]}
+   ]},
+  {id:'p4',label:'Phase 4',title:'Full Stack Integration',months:'Month 7–8',color:'#f472b6',
+   sections:[
+    {id:'fullstack',title:'Connect Everything',sub:'React + Spring Boot + PostgreSQL',color:'#f472b6',
+     groups:[
+      {title:'Integration Skills',items:['Axios for HTTP requests','Wiring React to Spring Boot APIs','Authentication flow (JWT in frontend)','Protected routes in React','Handle loading & error states']},
+      {title:'Major Project: School Management System',items:['Student: Login, view grades, view attendance','Teacher: Login, upload grades, manage attendance','Admin: Manage users and classes','Professional UI/UX design','Full deployment pipeline']}
+     ]}
+   ]},
+  {id:'p5',label:'Phase 5',title:'Deployment & DevOps',months:'Month 9',color:'#fbbf24',
+   sections:[
+    {id:'linux',title:'Linux Administration',sub:'Server management essentials',color:'#fbbf24',
+     groups:[
+      {title:'Linux Skills',items:['SSH & remote access','File permissions (chmod, chown)','Managing services (systemctl)','Reading logs (journalctl, tail)','Cron jobs for automation','User & group management']}
+     ]},
+    {id:'docker',title:'Docker & Nginx',sub:'Containerise & deploy',color:'#fbbf24',
+     groups:[
+      {title:'Docker Skills',items:['Images & containers','Writing Dockerfiles','Docker Compose for multi-service apps','Networking between containers','Volumes & data persistence']},
+      {title:'Nginx',items:['Reverse proxy setup','SSL/HTTPS configuration']},
+      {title:'Deploy School Management System',items:['Containerise React app','Containerise Spring Boot API','Containerise PostgreSQL','Write docker-compose.yml','Deploy to Render, Railway, or DigitalOcean']}
+     ]}
+   ]},
+  {id:'p6',label:'Phase 6',title:'Portfolio Building',months:'Month 10',color:'#f87171',
+   sections:[
+    {id:'portfolio',title:'Portfolio Website',sub:'Your public face to employers',color:'#f87171',
+     groups:[
+      {title:'Portfolio Pages',items:['About Me section','Projects showcase','Skills section','Contact form or links']},
+      {title:'Tech Stack',items:['Built with React','Fully responsive','Deployed live online']},
+      {title:'GitHub Cleanup',items:['Every repo has a README','Screenshots in every project repo','Setup instructions documented','Architecture diagrams where relevant']}
+     ]}
+   ]},
+  {id:'p7',label:'Phase 7',title:'Real-World Projects',months:'Month 11',color:'#fb923c',
+   sections:[
+    {id:'hospital',title:'Hospital Appointment System',sub:'Project #2',color:'#fb923c',
+     groups:[
+      {title:'Features to Build',items:['Doctor scheduling system','Appointment booking & management','Patient records management','Role-based access (doctor, patient, admin)','Proper documentation & README']}
+     ]},
+    {id:'inventory',title:'Inventory Management System',sub:'Project #3',color:'#fb923c',
+     groups:[
+      {title:'Features to Build',items:['Product catalogue & management','Sales tracking & history','Stock level alerts','Reports & dashboards','Role-based access (staff, manager)']}
+     ]}
+   ]},
+  {id:'p8',label:'Phase 8',title:'Interview Preparation',months:'Month 12',color:'#c084fc',
+   sections:[
+    {id:'dsa',title:'Data Structures & Algorithms',sub:'LeetCode grind',color:'#c084fc',
+     groups:[
+      {title:'Topics to Cover',items:['Arrays & strings','Linked Lists','Stacks & Queues','Trees (binary, BST)','Hash Tables / Hash Maps','Recursion basics']},
+      {title:'Practice',items:['Solve Easy problems on LeetCode','Solve Medium problems on LeetCode','Target: 50+ problems solved','Review & understand solutions']}
+     ]},
+    {id:'sysdesign',title:'System Design Basics',sub:'Think at scale',color:'#c084fc',
+     groups:[
+      {title:'Concepts to Know',items:['Client-Server architecture','REST API design principles','Database design & normalisation','Authentication patterns','Scaling basics (horizontal vs vertical)','Caching basics']}
+     ]},
+    {id:'behavioral',title:'Behavioral Interview Prep',sub:'Tell your story',color:'#c084fc',
+     groups:[
+      {title:'Questions to Prepare',items:['"Tell me about yourself."','"Describe a challenging project."','"Explain your final-year project."','"Why should we hire you?"','"What makes you different from other graduates?"']},
+      {title:'What Sets You Apart',items:['GitHub portfolio with 3–5 serious projects','Live deployed applications online','Full-stack skills: Frontend + Backend + DB','Deployment experience: Linux + Docker','Professional documentation & READMEs','At least one real user (school, NGO, church, business)']}
+     ]}
+   ]}
+];
+
+// ── BUILD SIDEBAR & PAGES ─────────────────────────────────────────────────────
+const nav = document.getElementById('sidebar-nav');
+const mainEl = document.getElementById('main-content');
+
+const SPECIAL_PAGES = ['dashboard','weekly','habits','jobs','freelance','graduation'];
+
+// Dashboard page
+function buildDashboardPage(){
+  const p = document.createElement('div');
+  p.className='section-page';p.id='page-dashboard';
+  p.innerHTML=`
+    <div class="page-header">
+      <div class="page-eyebrow">// Master Dashboard</div>
+      <div class="page-title">Overall Progress</div>
+      <div class="page-sub">Your complete 8-phase developer roadmap at a glance.</div>
+    </div>
+    <div class="stat-grid" id="dash-stats"></div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 22px">
+      <div style="font-size:13px;color:var(--text3);font-family:var(--font);margin-bottom:14px;text-transform:uppercase;letter-spacing:.08em">Phase breakdown</div>
+      <div id="dash-phases"></div>
+    </div>`;
+  mainEl.appendChild(p);
+}
+
+function updateDashboard(){
+  const stats = document.getElementById('dash-stats');
+  const phases = document.getElementById('dash-phases');
+  if(!stats||!phases) return;
+  const totalChecks = Object.keys(state.checks).length;
+  const doneChecks = Object.values(state.checks).filter(Boolean).length;
+  const pct = totalChecks>0?Math.round(doneChecks/totalChecks*100):0;
+  const totalSections = PHASES.reduce((a,p)=>a+p.sections.length,0);
+  stats.innerHTML=`
+    <div class="stat-card accent"><div class="stat-val">${pct}%</div><div class="stat-lbl">Overall complete</div></div>
+    <div class="stat-card"><div class="stat-val">${PHASES.length}</div><div class="stat-lbl">Phases total</div></div>
+    <div class="stat-card"><div class="stat-val">${totalSections}</div><div class="stat-lbl">Skill sections</div></div>
+    <div class="stat-card"><div class="stat-val">${doneChecks}/${totalChecks}</div><div class="stat-lbl">Tasks done</div></div>`;
+  phases.innerHTML='';
+  PHASES.forEach(ph=>{
+    const allItems=ph.sections.flatMap(s=>s.groups.flatMap(g=>g.items.map((_,i)=>`${s.id}_${g.title.replace(/[^a-zA-Z0-9_-]/g,'_')}_${i}`)));
+    const done=allItems.filter(k=>state.checks[k]).length;
+    const pct2=allItems.length>0?Math.round(done/allItems.length*100):0;
+    const row=document.createElement('div');row.className='dash-phase-row';
+    row.innerHTML=`<div class="dash-phase-name">${ph.label}: ${ph.title}</div>
+      <div class="dash-phase-bar-bg"><div class="dash-phase-bar-fill" style="background:${ph.color};width:${pct2}%"></div></div>
+      <div class="dash-phase-pct">${pct2}%</div>`;
+    phases.appendChild(row);
+  });
+  document.getElementById('overall-bar').style.width=pct+'%';
+  document.getElementById('overall-pct').textContent=pct+'%';
+  updateNavProgress();
+}
+
+// Weekly tracker
+function buildWeeklyPage(){
+  const p=document.createElement('div');p.className='section-page';p.id='page-weekly';
+  let rows='';
+  ['Q1 (Weeks 1–13)','Q2 (Weeks 14–26)','Q3 (Weeks 27–39)','Q4 (Weeks 40–52)'].forEach((q,qi)=>{
+    rows+=`<div style="margin-bottom:20px"><div class="week-label">${q}</div><div class="week-grid" id="wgrid-${qi}"></div></div>`;
+  });
+  p.innerHTML=`<div class="page-header">
+    <div class="page-eyebrow">// Weekly Tracker</div>
+    <div class="page-title">52-Week Study Tracker</div>
+    <div class="page-sub">Click a week to mark it as studied. Green = full week done.</div>
+  </div>
+  <div class="stat-grid">
+    <div class="stat-card accent"><div class="stat-val" id="wk-done">0</div><div class="stat-lbl">Weeks studied</div></div>
+    <div class="stat-card"><div class="stat-val" id="wk-remain">52</div><div class="stat-lbl">Weeks remaining</div></div>
+    <div class="stat-card"><div class="stat-val" id="wk-pct">0%</div><div class="stat-lbl">Year progress</div></div>
+  </div>${rows}`;
+  mainEl.appendChild(p);
+  setTimeout(()=>{
+    [0,1,2,3].forEach(qi=>{
+      const grid=document.getElementById('wgrid-'+qi);
+      if(!grid)return;
+      for(let w=0;w<13;w++){
+        const wn=qi*13+w+1;
+        const cell=document.createElement('div');
+        cell.className='week-cell'+(state.weeks[wn]?' done':'');
+        cell.title=`Week ${wn}`;cell.textContent=wn;
+        cell.addEventListener('click',()=>{
+          state.weeks[wn]=!state.weeks[wn];
+          cell.classList.toggle('done',state.weeks[wn]);
+          updateWeeklyStats();saveState();
+        });
+        grid.appendChild(cell);
+      }
+    });
+    updateWeeklyStats();
+  },50);
+}
+
+function updateWeeklyStats(){
+  const done=Object.values(state.weeks).filter(Boolean).length;
+  const el1=document.getElementById('wk-done');
+  const el2=document.getElementById('wk-remain');
+  const el3=document.getElementById('wk-pct');
+  if(el1)el1.textContent=done;
+  if(el2)el2.textContent=52-done;
+  if(el3)el3.textContent=Math.round(done/52*100)+'%';
+}
+
+// Daily habits
+const HABITS=['Study (2–3 hrs)','Build something','Push to GitHub','Read docs/book','Review yesterday','LeetCode problem','Rest & reflect'];
+function buildHabitsPage(){
+  const p=document.createElement('div');p.className='section-page';p.id='page-habits';
+  p.innerHTML=`<div class="page-header">
+    <div class="page-eyebrow">// Daily Habit Tracker</div>
+    <div class="page-title">This Week's Habits</div>
+    <div class="page-sub">Track your daily developer habits for the current week.</div>
+  </div>
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 22px">
+    <div style="display:flex;align-items:center;gap:0;padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:4px">
+      <div style="width:192px;font-size:11px;color:var(--text3);font-family:var(--font);text-transform:uppercase;letter-spacing:.08em">Habit</div>
+      ${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>`<div style="width:38px;text-align:center;font-size:11px;color:var(--text3);font-family:var(--font)">${d}</div>`).join('')}
+    </div>
+    <div id="habits-body"></div>
+  </div>`;
+  mainEl.appendChild(p);
+  setTimeout(()=>{
+    const body=document.getElementById('habits-body');if(!body)return;
+    HABITS.forEach((h,hi)=>{
+      const row=document.createElement('div');row.className='habit-row';
+      let days='';
+      for(let d=0;d<7;d++){
+        const k=`h${hi}_d${d}`;
+        days+=`<div class="habit-day${state.habits[k]?' done':''}" id="hd-${k}" data-k="${k}">${['M','T','W','T','F','S','S'][d]}</div>`;
+      }
+      row.innerHTML=`<div class="habit-name">${h}</div><div class="habit-days">${days}</div>`;
+      body.appendChild(row);
+    });
+    body.addEventListener('click',e=>{
+      const el=e.target.closest('.habit-day');if(!el)return;
+      const k=el.dataset.k;state.habits[k]=!state.habits[k];
+      el.classList.toggle('done',state.habits[k]);saveState();
+    });
+  },50);
+}
+
+// Job applications
+function buildJobsPage(){
+  const p=document.createElement('div');p.className='section-page';p.id='page-jobs';
+  p.innerHTML=`<div class="page-header">
+    <div class="page-eyebrow">// Job Application Tracker</div>
+    <div class="page-title">Applications</div>
+    <div class="page-sub">Track every job you apply for.</div>
+  </div>
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 22px;overflow-x:auto">
+    <table class="job-table"><thead><tr>
+      <th>Company</th><th>Role</th><th>Date</th><th>Status</th><th>Notes</th>
+    </tr></thead><tbody id="jobs-tbody"></tbody></table>
+    <button class="add-row-btn" id="add-job-btn">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Add application
+    </button>
+  </div>`;
+  mainEl.appendChild(p);
+  setTimeout(()=>{renderJobs();document.getElementById('add-job-btn').addEventListener('click',addJob);},50);
+}
+
+function renderJobs(){
+  const tbody=document.getElementById('jobs-tbody');if(!tbody)return;
+  tbody.innerHTML='';
+  (state.jobs||[]).forEach((j,i)=>{
+    const tr=document.createElement('tr');
+    const statuses=['pending','applied','interview','offer','rejected'];
+    const sc={'pending':'s-pending','applied':'s-applied','interview':'s-interview','offer':'s-offer','rejected':'s-rejected'};
+    tr.innerHTML=`
+      <td><input style="background:none;border:none;color:var(--text2);font-family:var(--sans);font-size:13px;width:120px" value="${j.company||''}" placeholder="Company" data-i="${i}" data-f="company"></td>
+      <td><input style="background:none;border:none;color:var(--text2);font-family:var(--sans);font-size:13px;width:140px" value="${j.role||''}" placeholder="Role" data-i="${i}" data-f="role"></td>
+      <td><input type="date" style="background:none;border:none;color:var(--text2);font-family:var(--font);font-size:12px" value="${j.date||''}" data-i="${i}" data-f="date"></td>
+      <td><select style="background:var(--bg3);border:1px solid var(--border);color:var(--text2);border-radius:5px;padding:3px 8px;font-size:12px;font-family:var(--sans)" data-i="${i}" data-f="status">
+        ${statuses.map(s=>`<option value="${s}"${j.status===s?' selected':''}>${s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join('')}
+      </select></td>
+      <td><input style="background:none;border:none;color:var(--text2);font-family:var(--sans);font-size:13px;width:160px" value="${j.notes||''}" placeholder="Notes" data-i="${i}" data-f="notes"></td>`;
+    tbody.appendChild(tr);
+  });
+  tbody.querySelectorAll('input,select').forEach(el=>{
+    el.addEventListener('change',function(){
+      const i=parseInt(this.dataset.i),f=this.dataset.f;
+      if(!state.jobs[i])state.jobs[i]={};
+      state.jobs[i][f]=this.value;saveState();
+    });
+  });
+}
+
+function addJob(){
+  state.jobs.push({company:'',role:'',date:'',status:'pending',notes:''});
+  renderJobs();saveState();
+}
+
+// Freelancing tracker
+function buildFreelancePage(){
+  const p=document.createElement('div');p.className='section-page';p.id='page-freelance';
+  p.innerHTML=`<div class="page-header">
+    <div class="page-eyebrow">// Freelancing Tracker</div>
+    <div class="page-title">Client Work</div>
+    <div class="page-sub">Track freelance clients and projects.</div>
+  </div>
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 22px;overflow-x:auto">
+    <table class="job-table"><thead><tr>
+      <th>Client</th><th>Project</th><th>Value (MWK)</th><th>Status</th><th>Deadline</th>
+    </tr></thead><tbody id="freelance-tbody"></tbody></table>
+    <button class="add-row-btn" id="add-client-btn">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Add client
+    </button>
+  </div>`;
+  mainEl.appendChild(p);
+  setTimeout(()=>{
+    if(!state.clients)state.clients=[];
+    renderClients();
+    document.getElementById('add-client-btn').addEventListener('click',()=>{
+      state.clients.push({client:'',project:'',value:'',status:'pending',deadline:''});
+      renderClients();saveState();
+    });
+  },50);
+}
+
+function renderClients(){
+  const tbody=document.getElementById('freelance-tbody');if(!tbody)return;
+  tbody.innerHTML='';
+  (state.clients||[]).forEach((c,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><input style="background:none;border:none;color:var(--text2);font-size:13px;width:120px" value="${c.client||''}" placeholder="Client name" data-i="${i}" data-f="client"></td>
+      <td><input style="background:none;border:none;color:var(--text2);font-size:13px;width:150px" value="${c.project||''}" placeholder="Project" data-i="${i}" data-f="project"></td>
+      <td><input style="background:none;border:none;color:var(--text2);font-family:var(--font);font-size:13px;width:100px" value="${c.value||''}" placeholder="0" data-i="${i}" data-f="value"></td>
+      <td><select style="background:var(--bg3);border:1px solid var(--border);color:var(--text2);border-radius:5px;padding:3px 8px;font-size:12px" data-i="${i}" data-f="status">
+        ${['pending','in progress','delivered','paid'].map(s=>`<option value="${s}"${c.status===s?' selected':''}>${s}</option>`).join('')}
+      </select></td>
+      <td><input type="date" style="background:none;border:none;color:var(--text2);font-family:var(--font);font-size:12px" value="${c.deadline||''}" data-i="${i}" data-f="deadline"></td>`;
+    tbody.appendChild(tr);
+  });
+  tbody.querySelectorAll('input,select').forEach(el=>{
+    el.addEventListener('change',function(){
+      const i=parseInt(this.dataset.i),f=this.dataset.f;
+      if(!state.clients)state.clients=[];
+      if(!state.clients[i])state.clients[i]={};
+      state.clients[i][f]=this.value;saveState();
+    });
+  });
+}
+
+// Graduation scorecard
+const SCORECARD=[
+  {title:'4+ Major Projects on GitHub',desc:'School System, Hospital System, Inventory System + 1 more',weight:'Critical'},
+  {title:'Active GitHub Profile',desc:'Daily/weekly commits, good commit messages, proper READMEs',weight:'Critical'},
+  {title:'At Least 1 App Deployed Live',desc:'Accessible via a real URL, not just localhost',weight:'Critical'},
+  {title:'Portfolio Website Live',desc:'About, projects, skills, contact — looks professional',weight:'Critical'},
+  {title:'Full-Stack Skills Demonstrated',desc:'React + Spring Boot + PostgreSQL working together',weight:'Critical'},
+  {title:'Docker & Linux Experience',desc:'Can containerise and deploy apps on a Linux server',weight:'High'},
+  {title:'50+ LeetCode Problems Solved',desc:'Mix of Easy and Medium difficulty',weight:'High'},
+  {title:'Interview Prep Complete',desc:'Behavioral answers ready, system design basics known',weight:'High'},
+  {title:'Applied to 10+ Jobs',desc:'Local companies, NGOs, remote opportunities',weight:'Medium'},
+  {title:'Real User for One Project',desc:'A school, church, NGO, or business actually using your software',weight:'Medium'},
+  {title:'BSc Computer Science Degree',desc:'Central Christian University — Year 4 complete',weight:'Base'},
+];
+
+function buildGraduationPage(){
+  const p=document.createElement('div');p.className='section-page';p.id='page-graduation';
+  p.innerHTML=`<div class="page-header">
+    <div class="page-eyebrow">// Graduation Readiness</div>
+    <div class="page-title">Graduation Scorecard</div>
+    <div class="page-sub">Check off each item as you complete it. This is what separates you from other graduates.</div>
+  </div>
+  <div class="stat-grid">
+    <div class="stat-card accent"><div class="stat-val" id="grad-pct">0%</div><div class="stat-lbl">Graduation ready</div></div>
+    <div class="stat-card"><div class="stat-val" id="grad-done">0/${SCORECARD.length}</div><div class="stat-lbl">Items complete</div></div>
+  </div>
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:4px 20px" id="scorecard-body"></div>`;
+  mainEl.appendChild(p);
+  setTimeout(()=>{
+    const body=document.getElementById('scorecard-body');if(!body)return;
+    const wColors={'Critical':var_('--coral'),'High':var_('--amber'),'Medium':var_('--blue'),'Base':var_('--text3')};
+    SCORECARD.forEach((item,i)=>{
+      const k=`grad_${i}`;
+      if(state.checks[k]===undefined)state.checks[k]=false;
+      const row=document.createElement('div');row.className='score-item';
+      const wc={'Critical':'#f87171','High':'#fbbf24','Medium':'#38bdf8','Base':'#5a5868'}[item.weight]||'#5a5868';
+      row.innerHTML=`
+        <div class="score-check${state.checks[k]?' done':''}" id="sc-${k}">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="score-info">
+          <div class="score-title">${item.title}</div>
+          <div class="score-desc">${item.desc}</div>
+        </div>
+        <div class="score-weight" style="color:${wc}">${item.weight}</div>`;
+      row.querySelector('.score-check').addEventListener('click',function(){
+        state.checks[k]=!state.checks[k];
+        this.classList.toggle('done',state.checks[k]);
+        updateGradStats();updateDashboard();saveState();
+      });
+      body.appendChild(row);
+    });
+    updateGradStats();
+  },50);
+}
+
+function var_(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()}
+
+function updateGradStats(){
+  const done=SCORECARD.filter((_,i)=>state.checks[`grad_${i}`]).length;
+  const pct=Math.round(done/SCORECARD.length*100);
+  const el1=document.getElementById('grad-pct');const el2=document.getElementById('grad-done');
+  if(el1)el1.textContent=pct+'%';
+  if(el2)el2.textContent=`${done}/${SCORECARD.length}`;
+}
+
+// Phase section page builder
+function buildPhasePage(phase){
+  const p=document.createElement('div');p.className='section-page';p.id=`page-${phase.id}`;
+  p.innerHTML=`<div class="page-header">
+    <div class="page-eyebrow" style="color:${phase.color}">// ${phase.label}</div>
+    <div class="page-title">${phase.title}</div>
+    <div class="page-sub">${phase.months} &mdash; ${phase.sections.length} section${phase.sections.length>1?'s':''}</div>
+  </div>`;
+  const stats=document.createElement('div');stats.className='stat-grid';stats.id=`stats-${phase.id}`;
+  p.appendChild(stats);
+  phase.sections.forEach(s=>buildSectionInPage(p,s,phase));
+  mainEl.appendChild(p);
+  updatePhaseStats(phase);
+}
+
+function buildSectionPage(phase,section){
+  const p=document.createElement('div');p.className='section-page';p.id=`page-${section.id}`;
+  p.innerHTML=`<div class="page-header">
+    <div class="page-eyebrow" style="color:${section.color}">// ${phase.label}</div>
+    <div class="page-title">${section.title}</div>
+    <div class="page-sub">${section.sub}</div>
+  </div>`;
+  buildSectionInPage(p,section,phase);
+  mainEl.appendChild(p);
+}
+
+function buildSectionInPage(container,section,phase){
+  section.groups.forEach((group,gi)=>{
+    const card=document.createElement('div');card.className='checklist-card';
+    const gid=`${section.id}_${group.title}`.replace(/[^a-zA-Z0-9_-]/g,'_');
+    const allDone=group.items.every((_,i)=>state.checks[`${gid}_${i}`]);
+    card.innerHTML=`
+      <div class="checklist-header">
+        <div class="ch-check${allDone?' done':''}" id="chk-${gid}">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="ch-accent" style="background:${section.color}"></div>
+        <div class="ch-info">
+          <div class="ch-title">${group.title}</div>
+          <div class="ch-sub">${section.title}</div>
+        </div>
+        <div class="ch-count" id="cnt-${gid}">${group.items.filter((_,i)=>state.checks[`${gid}_${i}`]).length}/${group.items.length}</div>
+        <svg class="ch-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" id="chev-${gid}">
+          <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="checklist-body" id="body-${gid}"></div>`;
+    const body=card.querySelector(`#body-${gid}`);
+    group.items.forEach((item,ii)=>{
+      const k=`${gid}_${ii}`;
+      if(state.checks[k]===undefined)state.checks[k]=false;
+      const row=document.createElement('div');row.className='task-item';
+      const cb=document.createElement('input');cb.type='checkbox';cb.className='task-cb';cb.id=`cb-${k}`;cb.checked=state.checks[k];cb.style.accentColor=section.color;
+      const lb=document.createElement('label');lb.className='task-lbl'+(state.checks[k]?' done':'');lb.setAttribute('for',`cb-${k}`);lb.textContent=item;
+      cb.addEventListener('change',function(){
+        state.checks[k]=this.checked;lb.classList.toggle('done',this.checked);
+        updateGroupCheck(gid,group,section.id);updatePhaseStats(phase);updateDashboard();saveState();
+      });
+      row.appendChild(cb);row.appendChild(lb);body.appendChild(row);
+    });
+    card.querySelector('.checklist-header').addEventListener('click',function(e){
+      if(e.target.closest('.ch-check')){toggleGroup(gid,group,section.id,phase);return;}
+      const open=body.classList.toggle('open');
+      card.querySelector(`#chev-${gid}`).classList.toggle('open',open);
+    });
+    container.appendChild(card);
+  });
+}
+
+function updateGroupCheck(gid,group,sid){
+  const allDone=group.items.every((_,i)=>state.checks[`${gid}_${i}`]);
+  const el=document.getElementById(`chk-${gid}`);if(el)el.classList.toggle('done',allDone);
+  const cnt=document.getElementById(`cnt-${gid}`);
+  if(cnt)cnt.textContent=`${group.items.filter((_,i)=>state.checks[`${gid}_${i}`]).length}/${group.items.length}`;
+  updateNavProgress();
+}
+
+function toggleGroup(gid,group,sid,phase){
+  const allDone=group.items.every((_,i)=>state.checks[`${gid}_${i}`]);
+  const newVal=!allDone;
+  group.items.forEach((_,i)=>{
+    const k=`${gid}_${i}`;state.checks[k]=newVal;
+    const cb=document.getElementById(`cb-${k}`);
+    if(cb){cb.checked=newVal;cb.nextElementSibling.classList.toggle('done',newVal);}
+  });
+  const el=document.getElementById(`chk-${gid}`);if(el)el.classList.toggle('done',newVal);
+  const cnt=document.getElementById(`cnt-${gid}`);if(cnt)cnt.textContent=`${newVal?group.items.length:0}/${group.items.length}`;
+  updatePhaseStats(phase);updateDashboard();saveState();
+}
+
+function updatePhaseStats(phase){
+  const el=document.getElementById(`stats-${phase.id}`);if(!el)return;
+  const allItems=phase.sections.flatMap(s=>s.groups.flatMap(g=>g.items.map((_,i)=>`${s.id}_${g.title.replace(/[^a-zA-Z0-9_-]/g,'_')}_${i}`)));
+  const done=allItems.filter(k=>state.checks[k]).length;
+  const pct=allItems.length>0?Math.round(done/allItems.length*100):0;
+  el.innerHTML=`
+    <div class="stat-card accent" style="border-color:${phase.color};background:${phase.color}18"><div class="stat-val" style="color:${phase.color}">${pct}%</div><div class="stat-lbl">Phase complete</div></div>
+    <div class="stat-card"><div class="stat-val">${done}/${allItems.length}</div><div class="stat-lbl">Tasks done</div></div>
+    <div class="stat-card"><div class="stat-val">${phase.sections.length}</div><div class="stat-lbl">Sections</div></div>`;
+  updateNavProgress();
+}
+
+function updateNavProgress(){
+  PHASES.forEach(ph=>{
+    const allItems=ph.sections.flatMap(s=>s.groups.flatMap(g=>g.items.map((_,i)=>`${s.id}_${g.title.replace(/[^a-zA-Z0-9_-]/g,'_')}_${i}`)));
+    const done=allItems.filter(k=>state.checks[k]).length;
+    const pct=allItems.length>0?Math.round(done/allItems.length*100):0;
+    const el=document.getElementById(`navprog-${ph.id}`);if(el)el.textContent=pct+'%';
+    ph.sections.forEach(s=>{
+      const sitems=s.groups.flatMap(g=>g.items.map((_,i)=>`${s.id}_${g.title.replace(/[^a-zA-Z0-9_-]/g,'_')}_${i}`));
+      const sdone=sitems.filter(k=>state.checks[k]).length;
+      const spct=sitems.length>0?Math.round(sdone/sitems.length*100):0;
+      const el2=document.getElementById(`navprog-${s.id}`);if(el2)el2.textContent=spct+'%';
+      const navItem=document.getElementById(`nav-${s.id}`);
+      if(navItem&&spct===100)navItem.classList.add('done');
+    });
+  });
+}
+
+// ── BUILD NAV ─────────────────────────────────────────────────────────────────
+function addNavItem(id,label,isChild=false){
+  const item=document.createElement('div');
+  item.className='nav-item'+(isChild?' nav-child':'');
+  item.id=`nav-${id}`;
+  item.style.paddingLeft=isChild?'32px':'20px';
+  item.innerHTML=`<div class="nav-dot"></div><span style="flex:1">${label}</span><span class="nav-progress" id="navprog-${id}"></span>`;
+  item.addEventListener('click',()=>showPage(id));
+  nav.appendChild(item);
+}
+
+function addNavLabel(label){
+  const l=document.createElement('div');l.className='nav-section-label';l.textContent=label;nav.appendChild(l);
+}
+
+// Build all
+buildDashboardPage();
+buildWeeklyPage();
+buildHabitsPage();
+buildJobsPage();
+buildFreelancePage();
+buildGraduationPage();
+PHASES.forEach(ph=>{
+  buildPhasePage(ph);
+  ph.sections.forEach(s=>buildSectionPage(ph,s));
+});
+
+// Nav
+addNavLabel('Overview');
+addNavItem('dashboard','Master Dashboard');
+addNavItem('weekly','Weekly Tracker');
+addNavItem('habits','Daily Habits');
+addNavLabel('8-Phase Roadmap');
+PHASES.forEach(ph=>{
+  addNavItem(ph.id,`${ph.label}: ${ph.title}`);
+  // Sections as sub-items in same phase page (clicking section goes to section view)
+  // We actually navigate to the section page directly
+  ph.sections.forEach(s=>addNavItem(s.id,'↳ '+s.title,true));
+});
+addNavLabel('Career');
+addNavItem('jobs','Job Applications');
+addNavItem('freelance','Freelancing Clients');
+addNavItem('graduation','Graduation Scorecard');
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+function showPage(id){
+  document.querySelectorAll('.section-page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const page=document.getElementById('page-'+id);
+  const navEl=document.getElementById('nav-'+id);
+  if(page)page.classList.add('active');
+  if(navEl)navEl.classList.add('active');
+  if(window.innerWidth<=768)document.getElementById('sidebar').classList.remove('open');
+  // scroll to top
+  window.scrollTo(0,0);
+}
+
+document.getElementById('menu-toggle').addEventListener('click',()=>{
+  document.getElementById('sidebar').classList.toggle('open');
+});
+
+// Init
+showPage('dashboard');
+updateDashboard();
+updateWeeklyStats();
+updateGradStats();
+PHASES.forEach(ph=>updatePhaseStats(ph));
+updateNavProgress();
+}); // end DOMContentLoaded
+</script>
+</body>
+</html>
