@@ -5,6 +5,33 @@
     <title>J.S. Mwala Pepala Sizasi</title>
 </head>
 <body>
+ <p>Mwala Pepala Sizasi</p>
 
+<button onclick=" 
+let randomNumber=Math.random();
+
+if(randomNumber >=0 && randomNumber<1/2){
+    randomNumber='Mwala';
+    //console.log(randomNumber);
+}else if(randomNumber >=1/2 && randomNumber<2/3){
+    randomNumber='Pepala';
+    //console.log(randomNumber);
+}else{
+    randomNumber='Sizasi';
+    //  console.log(randomNumber);
+}
+// copmare the random number with the button text
+if(randomNumber === 'Mwala'){
+   console.log('Mukufana Mphamvu!');
+}else if(randomNumber === 'Pepala'){
+    console.log('Waluza!');
+}else{
+    console.log('Wawina!');
+}
+
+" > Mwala</button>
+
+<button>Pepala</button> 
+<button>Sizasi</button> 
 </body>
 </html>
