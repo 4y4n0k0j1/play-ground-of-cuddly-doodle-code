@@ -30,7 +30,7 @@
 
 <button onclick=" 
 const computerChoice = computerChoice1();
-computerChoice1(computerChoice)
+//computerChoice1(computerChoice)
 // copmare the random number with the button text
 let result='';
 
@@ -47,27 +47,16 @@ if(computerChoice === 'Mwala'){
 alert('Mwasankha: '+'Pepala ' +' Makina asankha: ' + computerChoice + '\n' + result);
 " > Pepala</button> 
 
-        <button onclick=" 
-        const computerChoice = computerChoice1();
-        computerChoice1(computerChoice)
+    <button onclick=" 
+        
+       //computerChoice1(computerChoice)
+        computerChoice2('Sizasi');
         // copmare the random number with the button text
-        let result='';
-
-        if(computerChoice === 'Mwala'){
-        result='Waluza!';
         
-        }else if(computerChoice === 'Pepala'){
-            result='Wawina!';
-        
-        }else{
-            result='Mukufana Mphamvu!';
-        
-        }
-        alert('Mwasankha: '+'Sizasi ' +' Makina asankha: ' + computerChoice + '\n' + result);
         " > Sizasi</button> 
         <script>
 
-            function computerChoice1(computerChoice){
+        function computerChoice1(computerChoice){
 
         const randomNumber=Math.random();
         //let computerChoice='';
@@ -84,7 +73,28 @@ alert('Mwasankha: '+'Pepala ' +' Makina asankha: ' + computerChoice + '\n' + res
         }
          return computerChoice;
             }
-            
+
+        function computerChoice2(yourChoice){
+        const computerChoice = computerChoice1();    
+        
+        let result='';
+        if(yourChoice === 'Sizasi'){
+            if(computerChoice === 'Mwala'){
+        result='Waluza!';
+        
+        }else if(computerChoice === 'Pepala'){
+            result='Wawina!';
+        
+        }else{
+            result='Mukufana Mphamvu!';
+        
+        }
+            }
+
+        
+        alert('Mwasankha: '+yourChoice+' Makina asankha: ' + computerChoice + '\n' + result);
+
+        }    
         </script>
 </body>
 </html>
