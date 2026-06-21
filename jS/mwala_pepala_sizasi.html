@@ -29,31 +29,12 @@
 " > Mwala</button>
 
 <button onclick=" 
-const computerChoice = computerChoice1();
-//computerChoice1(computerChoice)
-// copmare the random number with the button text
-let result='';
-
-if(computerChoice === 'Mwala'){
-   result='Wawina!';
-  
-}else if(computerChoice === 'Pepala'){
-    result='Mukufana Mphamvu!';
-   
-}else{
-    result='Waluza!';
-   
-}
-alert('Mwasankha: '+'Pepala ' +' Makina asankha: ' + computerChoice + '\n' + result);
+computerChoice2('Pepala');
 " > Pepala</button> 
 
     <button onclick=" 
-        
-       //computerChoice1(computerChoice)
         computerChoice2('Sizasi');
-        // copmare the random number with the button text
-        
-        " > Sizasi</button> 
+        "> Sizasi</button> 
         <script>
 
         function computerChoice1(computerChoice){
@@ -90,10 +71,24 @@ alert('Mwasankha: '+'Pepala ' +' Makina asankha: ' + computerChoice + '\n' + res
         
         }
             }
+            // for paper
+            else if(yourChoice === 'Pepala'){
+
+            if(computerChoice === 'Mwala'){
+            result='Wawina!';
+            
+            }else if(computerChoice === 'Pepala'){
+                result='Mukufana Mphamvu!';
+            
+            }else{
+                result='Waluza!';
+
+                        }
 
         
-        alert('Mwasankha: '+yourChoice+' Makina asankha: ' + computerChoice + '\n' + result);
 
+        }
+        alert('Mwasankha: '+yourChoice+' Makina asankha: ' + computerChoice + '\n' + result);
         }    
         </script>
 </body>
