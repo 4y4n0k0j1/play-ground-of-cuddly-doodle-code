@@ -8,49 +8,29 @@
  <p>Mwala Pepala Sizasi</p>
 
 <button onclick=" 
-const randomNumber=Math.random();
-let computerChoice='';
 
-if(randomNumber >=0 && randomNumber<1/2){
-    computerChoice='Mwala';
-    //console.log(randomNumber);
-}else if(randomNumber >=1/2 && randomNumber<2/3){
-    computerChoice='Pepala';
-    //console.log(randomNumber);
-}else{
-    computerChoice='Sizasi';
-    //  console.log(randomNumber);
-}
-// copmare the random number with the button text
-let result='';
+ const computerChoice = computerChoice1();
+   
+   // copmare the random number with the button text
+        let result='';
 
-if(computerChoice === 'Mwala'){
-   result='Mukufana Mphamvu!';
-  
-}else if(computerChoice === 'Pepala'){
-    result='Waluza!';
-   
-}else{
-    result='Wawina!';
-   
-}
-alert('Mwasankha: '+'Mwala ' +' Makina asankha: ' + computerChoice + '\n' + result);
+        if(computerChoice === 'Mwala'){
+        result='Mukufana Mphamvu!';
+        
+        }else if(computerChoice === 'Pepala'){
+            result='Waluza!';
+        
+        }else{
+            result='Wawina!';
+        
+        }
+        alert('Mwasankha: '+'Mwala ' +' Makina asankha: ' + computerChoice + '\n' + result);
+
 " > Mwala</button>
 
 <button onclick=" 
-const randomNumber=Math.random();
-let computerChoice='';
-
-if(randomNumber >=0 && randomNumber<1/2){
-    computerChoice='Mwala';
-    //console.log(randomNumber);
-}else if(randomNumber >=1/2 && randomNumber<2/3){
-    computerChoice='Pepala';
-    //console.log(randomNumber);
-}else{
-    computerChoice='Sizasi';
-    //  console.log(randomNumber);
-}
+const computerChoice = computerChoice1();
+computerChoice1(computerChoice)
 // copmare the random number with the button text
 let result='';
 
@@ -68,19 +48,8 @@ alert('Mwasankha: '+'Pepala ' +' Makina asankha: ' + computerChoice + '\n' + res
 " > Pepala</button> 
 
         <button onclick=" 
-        const randomNumber=Math.random();
-        let computerChoice='';
-
-        if(randomNumber >=0 && randomNumber<1/2){
-            computerChoice='Mwala';
-            //console.log(randomNumber);
-        }else if(randomNumber >=1/2 && randomNumber<2/3){
-            computerChoice='Pepala';
-            //console.log(randomNumber);
-        }else{
-            computerChoice='Sizasi';
-            //  console.log(randomNumber);
-        }
+        const computerChoice = computerChoice1();
+        computerChoice1(computerChoice)
         // copmare the random number with the button text
         let result='';
 
@@ -94,7 +63,28 @@ alert('Mwasankha: '+'Pepala ' +' Makina asankha: ' + computerChoice + '\n' + res
             result='Mukufana Mphamvu!';
         
         }
-        alert('Mwasankha: '+'Mwala ' +' Makina asankha: ' + computerChoice + '\n' + result);
+        alert('Mwasankha: '+'Sizasi ' +' Makina asankha: ' + computerChoice + '\n' + result);
         " > Sizasi</button> 
+        <script>
+
+            function computerChoice1(computerChoice){
+
+        const randomNumber=Math.random();
+        //let computerChoice='';
+
+        if(randomNumber >=0 && randomNumber<1/2){
+        computerChoice='Mwala';
+        //console.log(randomNumber);
+        }else if(randomNumber >=1/2 && randomNumber<2/3){
+        computerChoice='Pepala';
+        //console.log(randomNumber);
+        }else{
+        computerChoice='Sizasi';
+        //  console.log(randomNumber);
+        }
+         return computerChoice;
+            }
+            
+        </script>
 </body>
 </html>
