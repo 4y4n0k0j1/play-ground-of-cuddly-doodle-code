@@ -1,4 +1,9 @@
 // random functions
+const score={
+    wins: 0,
+    losses: 0,
+    ties: 0
+};
 function computerChoice1(){
 
         const randomNumber=Math.random();
@@ -19,12 +24,15 @@ function computerChoice2(yourChoice){
         if(yourChoice === 'Sizasi'){
             if(computerChoice === 'Mwala'){
         result='Waluza!';
+        score.losses++;
 
         }else if(computerChoice === 'Pepala'){
             result='Wawina!';
+            score.ties++;
 
         }else{
             result='Mukufana Mphamvu!';
+            score.wins++;
 
         }
             }
@@ -43,6 +51,7 @@ function computerChoice2(yourChoice){
                         }
 
             }
+            // for rock 
             else if(yourChoice === 'Mwala'){
                 if(computerChoice === 'Mwala'){
                     result='Mukufana Mphamvu!';
@@ -56,7 +65,8 @@ function computerChoice2(yourChoice){
                 }
             }
 
-        alert('Mwasankha: '+yourChoice+' Makina asankha: ' + computerChoice + '\n' + result);
+        alert('Mwasankha: '+yourChoice+' Makina asankha: ' + computerChoice + '\n' + result + '\nChigoli: ' + score.wins + ', Zotayika: ' + score.losses + ', Maubenzi: ' + score.ties
+        );
         }
 
 const button=document.getElementById('mwala-btn')?.addEventListener('click', function() {
